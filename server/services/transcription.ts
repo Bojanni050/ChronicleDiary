@@ -4,6 +4,8 @@ export interface TranscriptionResult {
 
 export class TranscriptionService {
   async transcribe(recordingBase64: string, recordingType: string): Promise<string> {
+    void recordingBase64;
+    void recordingType;
     const apiKey = process.env.TRANSCRIPTION_API_KEY;
     const endpoint = process.env.TRANSCRIPTION_ENDPOINT;
 

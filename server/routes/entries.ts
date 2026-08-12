@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getDb, type EntryRow } from '../db.js';
+import { getDb } from '../db.js';
 
 export const entriesRouter = Router();
 

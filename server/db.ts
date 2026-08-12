@@ -1,36 +1,36 @@
-import { PGlite } from '@electric-sql/pglite';
+import pg from 'pg';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
+const { Pool } = pg;
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/chronicle_diary';
 
-let db: PGlite | null = null;
+let pool: pg.Pool | null = null;
+let schemaInitialized = false;
 
-export async function getDb(): Promise<PGlite> {
-  if (db) return db;
-
-  if (DATABASE_URL) {
-    // Filesystem-backed PGlite for local dev
-    // e.g. postgresql://user:password@localhost:5432/chronicle_diary
-    // We extract the database name to use as the PGlite data directory
-    const dbName = DATABASE_URL.split('/').pop() ?? 'chronicle_diary';
-    db = new PGlite(`./pgdata/${dbName}`);
-  } else {
-    // Fallback: in-memory (lost on restart)
-    db = new PGlite();
+export async function getDb(): Promise<pg.Pool> {
+  if (!pool) {
+    pool = new Pool({
+      connectionString: DATABASE_URL,
+    });
   }
 
-  await initSchema(db);
-  return db;
+  if (!schemaInitialized) {
+    await initSchema(pool);
+    schemaInitialized = true;
+  }
+
+  return pool;
 }
 
-async function initSchema(database: PGlite): Promise<void> {
+async function initSchema(databasePool: pg.Pool): Promise<void> {
   const schemaPath = join(__dirname, 'schema.sql');
   const schema = readFileSync(schemaPath, 'utf-8');
-  await database.exec(schema);
+  await databasePool.query(schema);
 }
 
 export interface EntryRow {

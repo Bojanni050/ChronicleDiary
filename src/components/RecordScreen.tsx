@@ -6,6 +6,7 @@ import type { RecordingType, FilterPreset } from '@/lib/types';
 import { storageService } from '@/lib/storage';
 import { entryService } from '@/lib/entries';
 import { processingService } from '@/lib/processing';
+import { settingsService } from '@/lib/settings';
 import { FilterSelector } from './FilterSelector';
 import { MoodSelector } from './MoodSelector';
 
@@ -95,10 +96,20 @@ export function RecordScreen({ onSaved }: RecordScreenProps) {
         userMood: selectedMood,
       });
 
-      // Fire and forget — processing happens in the background
-      processingService.startProcessing(entry.id, recordedBlob).catch((err) => {
-        console.error('Processing failed to start:', err);
-      });
+      // Fire and forget — background processing
+      processingService
+        .startProcessing(entry.id, recordedBlob)
+        .then(async (res) => {
+          if (res.success) {
+            const settings = await settingsService.getAll();
+            if (!settings.keep_original_recordings) {
+              await storageService.deleteLocal(storageReference);
+            }
+          }
+        })
+        .catch((err) => {
+          console.error('Processing failed:', err);
+        });
 
       onSaved();
       handleDiscard();

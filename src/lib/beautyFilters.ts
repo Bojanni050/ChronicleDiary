@@ -90,7 +90,6 @@ function applyGlow(
   const radius = 4;
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      const idx = (y * width + x) * 4;
       let r = 0, g = 0, b = 0, count = 0;
       for (let dy = -radius; dy <= radius; dy += 2) {
         for (let dx = -radius; dx <= radius; dx += 2) {

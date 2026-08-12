@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Video, Mic, ChevronRight } from 'lucide-react';
 import { entryService } from '@/lib/entries';
 import { storageService } from '@/lib/storage';
@@ -17,7 +17,6 @@ export function Timeline({ onEntryClick, refreshKey }: TimelineProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
-  const prevEntriesRef = useRef<DiaryEntry[]>([]);
 
   useEffect(() => {
     let cancelled = false;

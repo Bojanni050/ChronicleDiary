@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Video, Mic, RotateCcw, Sparkles, Brain, Wand2, Filter } from 'lucide-react';
 import { entryService } from '@/lib/entries';
 import { storageService } from '@/lib/storage';
