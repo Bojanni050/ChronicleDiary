@@ -31,8 +31,8 @@ app.get('/api/health', async (_req, res) => {
 // Serve frontend static files in production / container
 const staticPath = path.join(__dirname, '../dist');
 app.use(express.static(staticPath));
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api')) return next();
+app.use((req, res, next) => {
+  if (req.method !== 'GET' || req.path.startsWith('/api')) return next();
   res.sendFile(path.join(staticPath, 'index.html'), (err) => {
     if (err) next();
   });
